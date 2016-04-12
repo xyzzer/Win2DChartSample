@@ -13,6 +13,8 @@ namespace Win2DChartSample
         private const float DataStrokeThickness = 1;
         private const float MovingAverageStrokeThickness1 = 2;
         private const float MovingAverageStrokeThickness2 = 2;
+        private const float ColumnWidth = 80;
+        private const int ColumnAvgDataRange = 100;
         private const int DataPointsPerFrame = 10;
         private const int MovingAverageRange1 = 50;
         private const int MovingAverageRange2 = 150;
@@ -40,6 +42,7 @@ namespace Win2DChartSample
             }
 
             args.DrawingSession.Clear(Colors.White);
+            this.RenderAveragesAsColumns(args);
             this.RenderData(args, Colors.Black, DataStrokeThickness);
             this.RenderMovingAverage(args, Colors.DeepSkyBlue, MovingAverageStrokeThickness1, MovingAverageRange1);
             this.RenderMovingAverage(args, Colors.Red, MovingAverageStrokeThickness2, MovingAverageRange2);
@@ -61,6 +64,23 @@ namespace Win2DChartSample
                 cpb.EndFigure(CanvasFigureLoop.Open);
 
                 args.DrawingSession.DrawGeometry(CanvasGeometry.CreatePath(cpb), color, thickness);
+            }
+        }
+
+        private void RenderAveragesAsColumns(CanvasDrawEventArgs args)
+        {
+            var padding = .5 * (ColumnAvgDataRange - ColumnWidth);
+            for (int start = 0; start < _data.Count; start += ColumnAvgDataRange)
+            {
+                double total = 0;
+                var range = Math.Min(ColumnAvgDataRange, _data.Count - start);
+
+                for (int i = start; i < start + range; i++)
+                {
+                    total += _data[i];
+                }
+
+                args.DrawingSession.FillRectangle(start + (float)padding, (float)(canvas.ActualHeight * (1 - total / range)), ColumnWidth, (float)(canvas.ActualHeight * (total / range)), Colors.WhiteSmoke);
             }
         }
 
