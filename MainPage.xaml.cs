@@ -13,11 +13,11 @@ namespace Win2DChartSample
         private const float DataStrokeThickness = 1;
         private const float MovingAverageStrokeThickness1 = 2;
         private const float MovingAverageStrokeThickness2 = 2;
-        private const float ColumnWidth = 80;
-        private const int ColumnAvgDataRange = 100;
-        private const int DataPointsPerFrame = 10;
-        private const int MovingAverageRange1 = 50;
-        private const int MovingAverageRange2 = 150;
+        private int ColumnAvgDataRange => (int)ColumnDataRangeSlider.Value;
+        private float ColumnWidth => (float)(ColumnWidthSlider.Value * ColumnAvgDataRange * 0.01);
+        private int DataPointsPerFrame => (int)ValuesPerFrameSlider.Value;
+        private int MovingAverageRange1 => (int)MovingAverageRange1Slider.Value;
+        private int MovingAverageRange2 => (int)MovingAverageRange2Slider.Value;
         private readonly List<double> _data = new List<double>();
         private readonly Random _rand = new Random();
         private double _lastValue = 0.5;
@@ -42,12 +42,65 @@ namespace Win2DChartSample
             }
 
             args.DrawingSession.Clear(Colors.White);
-            this.RenderAveragesAsColumns(args);
-            this.RenderData(args, Colors.Black, DataStrokeThickness);
-            this.RenderMovingAverage(args, Colors.DeepSkyBlue, MovingAverageStrokeThickness1, MovingAverageRange1);
-            this.RenderMovingAverage(args, Colors.Red, MovingAverageStrokeThickness2, MovingAverageRange2);
+
+            if (ShowColumnsCheckBox.IsChecked == true)
+                this.RenderAveragesAsColumns(args);
+            if (ShowDataCheckBox.IsChecked == true)
+                this.RenderData(args, Colors.Black, DataStrokeThickness);
+            if (ShowMovingAverage1CheckBox.IsChecked == true)
+                this.RenderMovingAverage(args, Colors.DeepSkyBlue, MovingAverageStrokeThickness1, MovingAverageRange1);
+            if (ShowMovingAverage2CheckBox.IsChecked == true)
+                this.RenderMovingAverage(args, Colors.Red, MovingAverageStrokeThickness2, MovingAverageRange2);
+            if (ShowAxesCheckBox.IsChecked == true)
+                this.RenderAxes(args);
 
             canvas.Invalidate();
+        }
+
+        private void RenderAxes(CanvasDrawEventArgs args)
+        {
+            var width = (float)canvas.ActualWidth;
+            var height = (float)(canvas.ActualHeight);
+            var midWidth = (float)(width * .5);
+            var midHeight = (float)(height * .5);
+
+            using (var cpb = new CanvasPathBuilder(args.DrawingSession))
+            {
+                // Horizontal line
+                cpb.BeginFigure(new Vector2(0, midHeight));
+                cpb.AddLine(new Vector2(width, midHeight));
+                cpb.EndFigure(CanvasFigureLoop.Open);
+
+                // Horizontal line arrow
+                cpb.BeginFigure(new Vector2(width - 10, midHeight - 3));
+                cpb.AddLine(new Vector2(width, midHeight));
+                cpb.AddLine(new Vector2(width - 10, midHeight + 3));
+                cpb.EndFigure(CanvasFigureLoop.Open);
+
+                args.DrawingSession.DrawGeometry(CanvasGeometry.CreatePath(cpb), Colors.Gray, 1);
+            }
+
+            args.DrawingSession.DrawText("0", 5, midHeight - 30, Colors.Gray);
+            args.DrawingSession.DrawText(canvas.ActualWidth.ToString(), width - 50, midHeight - 30, Colors.Gray);
+
+            using (var cpb = new CanvasPathBuilder(args.DrawingSession))
+            {
+                // Vertical line
+                cpb.BeginFigure(new Vector2(midWidth, 0));
+                cpb.AddLine(new Vector2(midWidth, height));
+                cpb.EndFigure(CanvasFigureLoop.Open);
+
+                // Vertical line arrow
+                cpb.BeginFigure(new Vector2(midWidth - 3, 10));
+                cpb.AddLine(new Vector2(midWidth, 0));
+                cpb.AddLine(new Vector2(midWidth + 3, 10));
+                cpb.EndFigure(CanvasFigureLoop.Open);
+
+                args.DrawingSession.DrawGeometry(CanvasGeometry.CreatePath(cpb), Colors.Gray, 1);
+            }
+
+            args.DrawingSession.DrawText("0", midWidth + 5, height - 30, Colors.Gray);
+            args.DrawingSession.DrawText("1", midWidth + 5, 5, Colors.Gray);
         }
 
         private void RenderData(CanvasDrawEventArgs args, Color color, float thickness)
@@ -61,9 +114,18 @@ namespace Win2DChartSample
                     cpb.AddLine(new Vector2(i, (float)(canvas.ActualHeight * (1 - _data[i]))));
                 }
 
-                cpb.EndFigure(CanvasFigureLoop.Open);
-
-                args.DrawingSession.DrawGeometry(CanvasGeometry.CreatePath(cpb), color, thickness);
+                if (ShowDataAsAreaCheckBox.IsChecked == true)
+                {
+                    cpb.AddLine(new Vector2(_data.Count, (float)canvas.ActualHeight));
+                    cpb.AddLine(new Vector2(0, (float)canvas.ActualHeight));
+                    cpb.EndFigure(CanvasFigureLoop.Closed);
+                    args.DrawingSession.FillGeometry(CanvasGeometry.CreatePath(cpb), Colors.LightGreen);
+                }
+                else
+                {
+                    cpb.EndFigure(CanvasFigureLoop.Open);
+                    args.DrawingSession.DrawGeometry(CanvasGeometry.CreatePath(cpb), color, thickness);
+                }
             }
         }
 

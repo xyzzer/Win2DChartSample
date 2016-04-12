@@ -9,8 +9,97 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition 
+                Height="Auto"/>
+        </Grid.RowDefinitions>
         <canvas:CanvasControl
             x:Name="canvas"
+            Margin="5"
             Draw="Canvas_OnDraw" />
+        <StackPanel
+            Grid.Row="1"
+            Margin="10"
+            Orientation="Horizontal">
+            <StackPanel
+                Margin="10,0,0,0">
+                <TextBlock
+                    Text="Values per frame" />
+                <Slider
+                    x:Name="ValuesPerFrameSlider"
+                    Width="200"
+                    Minimum="0"
+                    Maximum="50"
+                    SmallChange="1"
+                    Value="1" />
+                <TextBlock
+                    Text="Moving Average Range 1" />
+                <Slider
+                    x:Name="MovingAverageRange1Slider"
+                    Width="200"
+                    Minimum="5"
+                    Maximum="500"
+                    SmallChange="1"
+                    Value="50" />
+                <TextBlock
+                    Text="Moving Average Range 2" />
+                <Slider
+                    x:Name="MovingAverageRange2Slider"
+                    Width="200"
+                    Minimum="5"
+                    Maximum="500"
+                    SmallChange="1"
+                    Value="150" />
+            </StackPanel>
+            <StackPanel
+                Margin="10,0,0,0">
+                <TextBlock
+                    Text="Column Data Range" />
+                <Slider
+                    x:Name="ColumnDataRangeSlider"
+                    Width="200"
+                    Minimum="10"
+                    Maximum="500"
+                    SmallChange="1"
+                    Value="100" />
+                <TextBlock
+                    Text="Column Width as Range %" />
+                <Slider
+                    x:Name="ColumnWidthSlider"
+                    Width="200"
+                    Minimum="50"
+                    Maximum="100"
+                    SmallChange="1"
+                    Value="80" />
+            </StackPanel>
+            <StackPanel
+                Margin="10,0,0,0">
+                <CheckBox
+                    x:Name="ShowColumnsCheckBox"
+                    Content="Show Columns"
+                    IsChecked="True" />
+                <CheckBox
+                    x:Name="ShowDataCheckBox"
+                    Content="Show Data"
+                    IsChecked="True" />
+                <CheckBox
+                    x:Name="ShowDataAsAreaCheckBox"
+                    Content="Show Data As Area Chart"
+                    IsChecked="False" />
+                <CheckBox
+                    x:Name="ShowMovingAverage1CheckBox"
+                    Content="Show Moving Average 1"
+                    IsChecked="True" />
+                <CheckBox
+                    x:Name="ShowMovingAverage2CheckBox"
+                    Content="Show Moving Average 2"
+                    IsChecked="True" />
+                <CheckBox
+                    x:Name="ShowAxesCheckBox"
+                    Content="Show Axes"
+                    IsChecked="True" />
+            </StackPanel>
+        </StackPanel>
     </Grid>
 </Page>
