@@ -99,6 +99,10 @@
                     x:Name="ShowAxesCheckBox"
                     Content="Show Axes"
                     IsChecked="True" />
+                <CheckBox
+                    x:Name="RenderAsPieChartCheckBox"
+                    Content="Columns To Pie Chart"
+                    IsChecked="False" />
             </StackPanel>
         </StackPanel>
     </Grid>
